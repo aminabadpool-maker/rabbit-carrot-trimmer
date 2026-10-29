@@ -1,10 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 int main(int argc, char *argv[]) {
-    if (argc < 3) return 1;
+    if (argc < 3) {
+        fprintf(stderr, "Usage: %s <input_video> <segments_file>\n", argv[0]);
+        return 1;
+    }
     FILE *fin = fopen(argv[1], "rb");
     FILE *flog = fopen(argv[2], "r");
-    if (!fin || !flog) return 1;
+    if (!fin || !flog) {
+        perror("[-] Initialization Error");
+        if (fin) fclose(fin);
+        if (flog) fclose(flog);
+        return 1;
+    }
     char line[256]; long s, e; int idx = 0;
     while (fgets(line, sizeof(line), flog)) {
         if (line[0] == '#' || line[0] == '\n') continue;
@@ -23,5 +32,6 @@ int main(int argc, char *argv[]) {
         }
     }
     fclose(flog); fclose(fin);
-    printf("[SUCCESS] Done.\n"); return 0;
+    printf("[SUCCESS] All segments extracted successfully.\n");
+    return 0;
 }
